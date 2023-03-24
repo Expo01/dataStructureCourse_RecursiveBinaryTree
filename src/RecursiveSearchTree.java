@@ -41,7 +41,7 @@ public class RecursiveSearchTree {
         // method is finally popped off the call stack
     }
 
-    public void rInsert (int value) {
+    public void rInsert(int value) {
         if (root == null) root = new Node(value); //accounts for empty tree
         rInsert(root, value); //otheerwise much traverse tree starting with root node
     }
@@ -58,11 +58,52 @@ public class RecursiveSearchTree {
 
         if (value < currentNode.value) {
             currentNode.left = rInsert(currentNode.left, value);
-        }
-        else if (value > currentNode.value) {
+        } else if (value > currentNode.value) {
             currentNode.right = rInsert(currentNode.right, value);
         }
-        return  currentNode;
+        return currentNode;
+    }
+
+    private Node deleteNode(Node currentNode, int value) {
+        if (currentNode == null) return null; // for attempting to delete a value that is not in the tree, we must
+        // recursively loop until we get here
+        if (value < currentNode.value) {
+            currentNode.left = deleteNode(currentNode.left, value); // if not in the tree, we will eventually have
+            // currentNode.left (which points to null) = to the recursive method and passing null as first parameter
+            // which then returns null since currentNode == null
+        } else if (value > currentNode.value) { //same as .left
+            currentNode.right = deleteNode(currentNode.right, value);
+        } else { //this is reached if currentNode is = to value
+            if (currentNode.left == null && currentNode.right == null) { // checks if currentNode is leaf Node
+                return null; // returns null back to previous method in call stack which set .right or .left to current
+                // recursive case. since this recursive case is returning null, it effectively breaks the leaf off and
+                // instead .right / .left points to null
+            } else if (currentNode.left == null) { // if node exists to right but not left
+                currentNode = currentNode.right; // currentNode pointer now points to the value it pointed right to. this effectively
+                // means that the value that currentNode previously pointed to now has no pointer, but the Node still exists
+                // but will be garbage collected. the new currentNode returned back to the prior recursive case and is
+                // pointed to as the .right/.left of preceding Node and call stack will cycle till empty
+            } else if (currentNode.right == null) { // node exists L not R
+                currentNode = currentNode.left;
+            } else{
+                int subTreeMin = minValue(currentNode.right); //retrives minimum value from the right branch of the node
+                // if my logic is correct, we could also use a maxValue method and traverse the left branch of the node
+                currentNode.value = subTreeMin; // we take the lowest value from the right branch of the node and make
+                // this the new value of the current node pointer. this means that all items in the right branch will still
+                // be greater and all items in the left branch will still be less, except now we have a value redundancy
+                currentNode.right = deleteNode(currentNode.right, subTreeMin); // this takes care of the redundancy by
+                // traversing the tree until redundant item found and deleted
+            }
+        }
+        return currentNode;
+    }
+
+    private int minValue(Node currentNode) { // traverses tree to the left and ultimately returns value of node with
+        // lowest value
+        while (currentNode.left != null) {
+            currentNode = currentNode.left;
+        }
+        return currentNode.value;
     }
 
 
