@@ -92,7 +92,7 @@ public class RecursiveSearchTree {
                 // this the new value of the current node pointer. this means that all items in the right branch will still
                 // be greater and all items in the left branch will still be less, except now we have a value redundancy
                 currentNode.right = deleteNode(currentNode.right, subTreeMin); // this takes care of the redundancy by
-                // traversing the tree until redundant item found and deleted
+                // traversing the tree until redundant item found and deleted.
             }
         }
         return currentNode;
